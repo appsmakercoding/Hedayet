@@ -1,0 +1,71 @@
+name: Build Hedayet APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Check required assets
+        run: |
+          missing=0
+          for f in assets/icon/icon.png assets/icon/icon_foreground.png assets/images/home_header.png assets/azan/azan.mp3; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing file: $f"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Create Android project
+        run: flutter create . --platforms=android --org com.hedayet --project-name hedayet
+
+      - name: Remove default test (not needed for the build)
+        run: rm -f test/widget_test.dart
+
+      - name: Patch Android (notifications, alarms, location, desugaring)
+        run: python3 patch_android.py
+
+      - name: Copy azan sound to Android res/raw (notification sound)
+        run: |
+          mkdir -p android/app/src/main/res/raw
+          cp assets/azan/azan.mp3 android/app/src/main/res/raw/azan.mp3
+          ls -l android/app/src/main/res/raw
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hedayet-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          
