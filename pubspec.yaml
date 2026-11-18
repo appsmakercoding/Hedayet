@@ -1,0 +1,43 @@
+name: hedayet
+description: "হেদায়েত - নামাজ, কুরআন ও হাদিসের অ্যাপ।"
+publish_to: 'none'
+version: 1.0.0+5
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_local_notifications: ^17.2.4
+  timezone: ^0.9.4
+  shared_preferences: ^2.3.2
+  sqflite: ^2.3.3+1
+  just_audio: ^0.9.40
+  geolocator: ^12.0.0
+  webview_flutter: ^4.9.0
+  flutter_compass: ^0.8.1
+
+dependency_overrides:
+  geolocator_android: 4.6.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter:
+  uses-material-design: true
+
+  # অ্যাপের ভেতরে ছবি ব্যবহারের জন্য অ্যাসেট পাথ
+  assets:
+    - assets/images/home_header.png
+    - assets/azan/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#064427"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
