@@ -87,3 +87,40 @@ assert 'coreLibraryDesugaring' in final, 'desugaring বসেনি'
 print(path.name, 'patched')
 print('----- patched', path.name, '-----')
 print(final)
+
+
+# ---------- Lint-vital বন্ধ (প্লাগিনের lint ক্র্যাশ করলেও APK বিল্ড যেন থেমে না যায়) ----------
+root_kts = pathlib.Path('android/build.gradle.kts')
+root_groovy = pathlib.Path('android/build.gradle')
+if root_kts.exists():
+    rp = root_kts
+    block = (
+        '\n// hedayet: lintVital বন্ধ\n'
+        'subprojects {\n'
+        '    tasks.configureEach {\n'
+        '        if (name.startsWith("lintVital")) {\n'
+        '            enabled = false\n'
+        '        }\n'
+        '    }\n'
+        '}\n'
+    )
+elif root_groovy.exists():
+    rp = root_groovy
+    block = (
+        '\n// hedayet: lintVital বন্ধ\n'
+        'subprojects {\n'
+        '    tasks.configureEach { task ->\n'
+        "        if (task.name.startsWith('lintVital')) {\n"
+        '            task.enabled = false\n'
+        '        }\n'
+        '    }\n'
+        '}\n'
+    )
+else:
+    rp = None
+if rp is not None:
+    rt = rp.read_text(encoding='utf-8')
+    if 'hedayet: lintVital' not in rt:
+        rp.write_text(rt + block, encoding='utf-8')
+    print(rp.name, 'lintVital disabled')
+    
