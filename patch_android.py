@@ -70,13 +70,13 @@ if 'coreLibraryDesugaring' not in s:
         s = re.sub(r'compileOptions\s*\{', 'compileOptions {\n        isCoreLibraryDesugaringEnabled = true', s, count=1)
         s = re.sub(r'defaultConfig\s*\{', 'defaultConfig {\n        multiDexEnabled = true', s, count=1)
         release_extra = ('\n            isMinifyEnabled = false\n            isShrinkResources = false'
-                         '\n            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")')
+                         '\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")')
         s += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")\n}\n'
     else:
         s = re.sub(r'compileOptions\s*\{', 'compileOptions {\n        coreLibraryDesugaringEnabled true', s, count=1)
         s = re.sub(r'defaultConfig\s*\{', 'defaultConfig {\n        multiDexEnabled true', s, count=1)
         release_extra = ('\n            minifyEnabled false\n            shrinkResources false'
-                         "\n            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'")
+                         "\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'")
         s += "\ndependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'\n}\n"
     s = re.sub(r'(buildTypes\s*\{\s*release\s*\{)', lambda m: m.group(1) + release_extra, s, count=1)
     path.write_text(encoding='utf-8', data=s)
